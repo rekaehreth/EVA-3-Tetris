@@ -12,10 +12,29 @@ namespace WinFormsTetris
         public bool GameOver { get; set; }
         public bool GameActive { get; set; }
 
-        public void newGame(int size)
+        public void PauseGame()
+        {
+            GameActive = false;
+        }
+
+        public void NewGame(int size)
         {
             table = new int[16, size];
             currentPiece = new TetrisPiece();
+            GameActive = true;
+        }
+        public void SaveMovedPiece(List<(int, int)> NewCoordinates)
+        {
+            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = 0;
+            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = 0;
+            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = 0;
+            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = 0;
+            currentPiece.Coordinates = NewCoordinates;
+            currentPiece.Direction = (PieceDirection)((int)currentPiece.Direction + 1 % 4);
+            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = (int)currentPiece.Type + 1;
+            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = (int)currentPiece.Type + 1;
+            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = (int)currentPiece.Type + 1;
+            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = (int)currentPiece.Type + 1;
         }
         public bool RotatePiece()
         {
@@ -46,16 +65,7 @@ namespace WinFormsTetris
                     return false;
                 }
             }
-            table[ currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = 0;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = 0;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = 0;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = 0;
-            currentPiece.Coordinates = rotatedCoordinates;
-            currentPiece.Direction = (PieceDirection)((int)currentPiece.Direction + 1 % 4);
-            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = (int)currentPiece.Type + 1;
+            SaveMovedPiece(rotatedCoordinates);
             return true;
         }
         private List<(int, int)> RotateZ()
@@ -191,34 +201,46 @@ namespace WinFormsTetris
         }
         public bool MovePieceLeft()
         {
-            List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
+            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
             for (int i = 0; i < 4; ++i)
             {
-                if (rotatedCoordinates[i].Item1 > 16 || table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 > size)
+                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1,  currentPiece.Coordinates[i].Item2 - 1);
+                if ( table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 < 0 )
                 {
                     return false;
                 }
             }
-            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = 0;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = 0;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = 0;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = 0;
-            currentPiece.Coordinates = rotatedCoordinates;
-            currentPiece.Direction = (PieceDirection)((int)currentPiece.Direction + 1 % 4);
-            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = (int)currentPiece.Type + 1;
+            SaveMovedPiece(movedCoordinates);
             return true;
-            throw new NotImplementedException();
         }
         public bool MovePieceRight()
         {
+            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
+            for (int i = 0; i < 4; ++i)
+            {
+                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1, currentPiece.Coordinates[i].Item2 + 1);
+                if (table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 >= size)
+                {
+                    return false;
+                }
+            }
+            SaveMovedPiece(movedCoordinates);
+            return true;
             throw new NotImplementedException();
         }
         public bool MovePieceDown()
         {
-            throw new NotImplementedException();
+            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
+            for (int i = 0; i < 4; ++i)
+            {
+                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1 + 1, currentPiece.Coordinates[i].Item2);
+                if (table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item1 >= 16)
+                {
+                    return false;
+                }
+            }
+            SaveMovedPiece(movedCoordinates);
+            return true;
         }
     }
 

@@ -29,7 +29,7 @@ namespace WinFormsTetris
                 korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
                 korobeiniki.PlayLooping();
                 // **TODO** Dialog Window for size
-                model.newGame();
+                model.NewGame();
                 // **TODO** Draw table 
             }
             if(e.ClickedItem.Text == "Pause Game")

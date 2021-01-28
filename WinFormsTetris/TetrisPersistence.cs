@@ -10,6 +10,11 @@ namespace WinFormsTetris
     {
         private StreamReader loader;
         private StreamWriter saver;
+        TetrisModel model;
+        public TetrisPersistence()
+        {
+            
+        }
         
         public async Task Save(string path)
         {
