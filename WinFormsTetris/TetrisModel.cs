@@ -6,93 +6,115 @@ namespace WinFormsTetris
 {
     public class TetrisModel
     {
-        int[,] table;
-        int size; // oszlopok száma
-        TetrisPiece currentPiece;
-        public bool GameOver { get; set; }
+        private TetrisPersistence persistence = new TetrisPersistence();
+        public int Size { get; set; } // oszlopok száma
+        public int[,] Table { get; set; }
+        public TetrisPiece CurrentPiece { get; set; }
         public bool GameActive { get; set; }
-
+        public EventHandler UpdateTable;
+        public bool IsGameOver()
+        {
+            return LineFull(0);
+        }
         public void PauseGame()
         {
             GameActive = false;
         }
-
         public void NewGame(int size)
         {
-            table = new int[16, size];
-            currentPiece = new TetrisPiece();
+            Table = new int[16, size];
+            CurrentPiece = new TetrisPiece();
             GameActive = true;
+        }
+        public void LoadGame(string path)
+        {
+            persistence.Save(path);
+            Size = persistence.Size;
+            CurrentPiece = persistence.CurrentPiece;
+            Table = persistence.Table;
+        }
+        public void SaveGame(string path)
+        {
+            persistence.Size = Size;
+            persistence.CurrentPiece = CurrentPiece;
+            persistence.Table = Table;
+            persistence.Save(path);
         }
         public void SaveMovedPiece(List<(int, int)> NewCoordinates)
         {
-            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = 0;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = 0;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = 0;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = 0;
-            currentPiece.Coordinates = NewCoordinates;
-            currentPiece.Direction = (PieceDirection)((int)currentPiece.Direction + 1 % 4);
-            table[currentPiece.Coordinates[0].Item1, currentPiece.Coordinates[0].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[1].Item1, currentPiece.Coordinates[1].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[2].Item1, currentPiece.Coordinates[2].Item2] = (int)currentPiece.Type + 1;
-            table[currentPiece.Coordinates[3].Item1, currentPiece.Coordinates[3].Item2] = (int)currentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = 0;
+            Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = 0;
+            Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = 0;
+            Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = 0;
+            CurrentPiece.Coordinates = NewCoordinates;
+            CurrentPiece.Direction = (PieceDirection)((int)CurrentPiece.Direction + 1 % 4);
+            Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = (int)CurrentPiece.Type + 1;
+            UpdateTable?.Invoke(this, null);
         }
         public bool RotatePiece()
         {
-            List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
-            switch (currentPiece.Type)
+            if(GameActive)
             {
-                case PieceType.Smashboy:
-                    return true;
-                case PieceType.Hero:
-                    rotatedCoordinates = RotateHero();
-                    break;
-                case PieceType.Ricky:
-                    rotatedCoordinates = RotateRicky();
-                    break;
-                case PieceType.TeeWee:
-                    rotatedCoordinates = RotateTeeWee();
-                    break;
-                case PieceType.Z:
-                    rotatedCoordinates = RotateZ();
-                    break;
-                default:
-                    return false;
-            }
-            for (int i = 0; i < 4; ++i)
-            {
-                if (rotatedCoordinates[i].Item1 > 16 || table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 > size)
+                List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
+                switch (CurrentPiece.Type)
                 {
-                    return false;
+                    case PieceType.Smashboy:
+                        return true;
+                    case PieceType.Hero:
+                        rotatedCoordinates = RotateHero();
+                        break;
+                    case PieceType.Ricky:
+                        rotatedCoordinates = RotateRicky();
+                        break;
+                    case PieceType.TeeWee:
+                        rotatedCoordinates = RotateTeeWee();
+                        break;
+                    case PieceType.Z:
+                        rotatedCoordinates = RotateZ();
+                        break;
+                    default:
+                        return false;
                 }
+                for (int i = 0; i < 4; ++i)
+                {
+                    if (rotatedCoordinates[i].Item1 > 16 || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 > Size)
+                    {
+                        return false;
+                    }
+                }
+                SaveMovedPiece(rotatedCoordinates);
+                return true;
             }
-            SaveMovedPiece(rotatedCoordinates);
-            return true;
+            return false;
         }
         private List<(int, int)> RotateZ()
         {
             List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
-            switch ( currentPiece.Direction)
+            switch ( CurrentPiece.Direction)
             {
                 case PieceDirection.Up:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
                     break;
                 case PieceDirection.Right:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
                     break;
                 case PieceDirection.Down:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
                     break;
                 case PieceDirection.Left:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
@@ -100,32 +122,31 @@ namespace WinFormsTetris
             }
             return rotatedCoordinates;
         }
-
         private List<(int, int)> RotateTeeWee()
         {
             List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
-            switch (currentPiece.Direction)
+            switch (CurrentPiece.Direction)
             {
                 case PieceDirection.Up:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
                     break;
                 case PieceDirection.Right:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 2 ));
                     break;
                 case PieceDirection.Down:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
                     break;
                 case PieceDirection.Left:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 2 ));
@@ -133,32 +154,31 @@ namespace WinFormsTetris
             }
             return rotatedCoordinates;
         }
-
         private List<(int, int)> RotateRicky()
         {
             List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
-            switch (currentPiece.Direction)
+            switch (CurrentPiece.Direction)
             {
                 case PieceDirection.Up:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
                     break;
                 case PieceDirection.Right:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
                     break;
                 case PieceDirection.Down:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 2 ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
                     break;
                 case PieceDirection.Left:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
@@ -166,32 +186,31 @@ namespace WinFormsTetris
             }
             return rotatedCoordinates;
         }
-
         private List<(int, int)> RotateHero()
         {
             List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
-            switch (currentPiece.Direction)
+            switch (CurrentPiece.Direction)
             {
                 case PieceDirection.Up:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 3, rotatedCoordinates[1].Item2));
                     break;
                 case PieceDirection.Right:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 1));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 3));
                     break;
                 case PieceDirection.Down:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 3, rotatedCoordinates[1].Item2));
                     break;
                 case PieceDirection.Left:
-                    rotatedCoordinates.Add(currentPiece.Coordinates[3]);
+                    rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 1));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 2));
                     rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 3));
@@ -199,51 +218,89 @@ namespace WinFormsTetris
             }
             return rotatedCoordinates;
         }
-        public bool MovePieceLeft()
+        public void MovePieceLeft()
         {
-            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
-            for (int i = 0; i < 4; ++i)
+            if(GameActive)
             {
-                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1,  currentPiece.Coordinates[i].Item2 - 1);
-                if ( table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 < 0 )
+                List<(int, int)> movedCoordinates = new List<(int, int)>(4);
+                for (int i = 0; i < 4; ++i)
                 {
-                    return false;
+                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 - 1);
+                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 < 0)
+                    {
+                        return;
+                    }
                 }
+                SaveMovedPiece(movedCoordinates);
             }
-            SaveMovedPiece(movedCoordinates);
-            return true;
         }
-        public bool MovePieceRight()
+        public void MovePieceRight()
         {
-            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
-            for (int i = 0; i < 4; ++i)
+            if(GameActive)
             {
-                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1, currentPiece.Coordinates[i].Item2 + 1);
-                if (table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 >= size)
+                List<(int, int)> movedCoordinates = new List<(int, int)>(4);
+                for (int i = 0; i < 4; ++i)
                 {
-                    return false;
+                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 + 1);
+                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 >= Size)
+                    {
+                        return;
+                    }
                 }
+                SaveMovedPiece(movedCoordinates);
             }
-            SaveMovedPiece(movedCoordinates);
-            return true;
-            throw new NotImplementedException();
         }
-        public bool MovePieceDown()
+        public void MovePieceDown()
         {
-            List<(int, int)> movedCoordinates = new List<(int, int)>(4);
-            for (int i = 0; i < 4; ++i)
+            if(GameActive)
             {
-                movedCoordinates[i] = (currentPiece.Coordinates[i].Item1 + 1, currentPiece.Coordinates[i].Item2);
-                if (table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item1 >= 16)
+                List<(int, int)> movedCoordinates = new List<(int, int)>(4);
+                for (int i = 0; i < 4; ++i)
                 {
-                    return false;
+                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1 + 1, CurrentPiece.Coordinates[i].Item2);
+                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item1 >= 16)
+                    {
+                        return;
+                    }
+                }
+                SaveMovedPiece(movedCoordinates);
+            }
+        }
+        public bool LineFull(int line)
+        {
+            bool lineFull = true;
+            for (int row = 0; row < Size; ++row)
+            {
+                if (Table[line, row] == 0)
+                {
+                    lineFull = false;
                 }
             }
-            SaveMovedPiece(movedCoordinates);
-            return true;
+            return lineFull;
+        }
+        public void RemoveFullLines()
+        {
+            for(int line = 0; line< 16; ++line)
+            {
+                if (LineFull(line))
+                {
+                    for (int fullLineRow = 0; fullLineRow < Size; ++fullLineRow)
+                    {
+                        Table[line, fullLineRow] = 0;
+                    }
+                    for (int droppingLine = line - 1; droppingLine > 0; --droppingLine)
+                    {
+                        for (int row = 0; row < Size; ++row)
+                        {
+                            Table[droppingLine + 1, row] = Table[droppingLine, row];
+                            Table[droppingLine, row] = 0;
+                        }
+                    }
+                }
+            }
+            UpdateTable?.Invoke(this, null);
         }
     }
-
     public class TetrisPiece
     {
         public List<(int, int)> Coordinates { get; set; }
@@ -307,7 +364,6 @@ namespace WinFormsTetris
         TeeWee      // Podium, 4, purple
     }
 }
-
 /*
 Code: 
     int size = 8;
@@ -320,7 +376,6 @@ Code:
 		}
 		Console.Write("\n");
 	}
-
 Output: 
     0 0 0 0 0 0 0 0 
     0 0 0 0 0 0 0 0 
@@ -338,26 +393,4 @@ Output:
     0 0 0 0 0 0 0 0 
     0 0 0 0 0 0 0 0 
     0 0 0 0 0 0 0 0
-
-Code: 
-    int size = 8;
-	int[,] myArray = new int[size, 16];;
-	for(int i = 0; i < size; ++i)
-	{
-		for(int j = 0; j < 16; ++j) 
-		{
-			Console.Write(myArray[i, j] + " ");
-		}
-		Console.Write("\n");
-	}
-
-Output: 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 */
