@@ -25,6 +25,7 @@ namespace WinFormsTetris
             Table = new int[16, size];
             CurrentPiece = new TetrisPiece();
             GameActive = true;
+            UpdateTable?.Invoke(this, null);
         }
         public void LoadGame(string path)
         {

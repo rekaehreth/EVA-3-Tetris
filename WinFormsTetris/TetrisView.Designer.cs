@@ -34,6 +34,7 @@ namespace WinFormsTetris
             this.saveGame = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGame = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseGame = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayingArea = new System.Windows.Forms.TableLayoutPanel();
             this.menu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,11 +77,25 @@ namespace WinFormsTetris
             this.pauseGame.Size = new System.Drawing.Size(103, 24);
             this.pauseGame.Text = "Pause Game";
             // 
+            // PlayingArea
+            // 
+            this.PlayingArea.ColumnCount = 2;
+            this.PlayingArea.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PlayingArea.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PlayingArea.Location = new System.Drawing.Point(159, 76);
+            this.PlayingArea.Name = "PlayingArea";
+            this.PlayingArea.RowCount = 2;
+            this.PlayingArea.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PlayingArea.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PlayingArea.Size = new System.Drawing.Size(250, 125);
+            this.PlayingArea.TabIndex = 1;
+            // 
             // TetrisView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.PlayingArea);
             this.Controls.Add(this.menu);
             this.MainMenuStrip = this.menu;
             this.Name = "TetrisView";
@@ -99,6 +114,7 @@ namespace WinFormsTetris
         private System.Windows.Forms.ToolStripMenuItem saveGame;
         private System.Windows.Forms.ToolStripMenuItem loadGame;
         private System.Windows.Forms.ToolStripMenuItem pauseGame;
+        private System.Windows.Forms.TableLayoutPanel PlayingArea;
     }
 }
 
