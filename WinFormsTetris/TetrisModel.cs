@@ -12,6 +12,13 @@ namespace WinFormsTetris
         public TetrisPiece CurrentPiece { get; set; }
         public bool GameActive { get; set; }
         public EventHandler UpdateTable;
+        public void EndGame()
+        {
+            Size = 0;
+            Table = null;
+            CurrentPiece = null;
+            GameActive = false;
+        }
         public bool IsGameOver()
         {
             return LineFull(0);
@@ -19,6 +26,10 @@ namespace WinFormsTetris
         public void PauseGame()
         {
             GameActive = false;
+        }
+        internal void ContinueGame()
+        {
+            GameActive = true;
         }
         public void NewGame(int size)
         {
