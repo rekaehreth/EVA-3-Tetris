@@ -1,0 +1,16 @@
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.exe
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.deps.json
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.runtimeconfig.json
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.runtimeconfig.dev.json
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.dll
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\bin\Debug\netcoreapp3.1\WinFormsTetris.pdb
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.csprojAssemblyReference.cache
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.TetrisView.resources
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.csproj.GenerateResource.cache
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.AssemblyInfoInputs.cache
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.AssemblyInfo.cs
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.csproj.CoreCompileInputs.cache
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.dll
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.pdb
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.genruntimeconfig.cache
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.Resource.resources
