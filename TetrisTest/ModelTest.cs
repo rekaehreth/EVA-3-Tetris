@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WinFormsTetris.Model;
 using WinFormsTetris.Persistence;
-using Moq;
 using System.Threading.Tasks;
 using System;
 
@@ -24,6 +23,7 @@ namespace TetrisTest
 
 
             model = new TetrisModel();
+            model.GameActive = true;
             model.GameOver += GameIsOver;
             model.UpdateTable += TableUpdated;
         }
@@ -124,116 +124,720 @@ namespace TetrisTest
         #region Movement
         #region Smashboy
         [TestMethod]
-        public void Test_MoveSmashboy_Succesfull()
+        public void Test_MoveSmashboyRight_Succesfull()
         {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Smashboy;
+            model.Table[0, 1] = (int)PieceType.Smashboy;
+            model.Table[1, 0] = (int)PieceType.Smashboy;
+            model.Table[1, 1] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (1, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (1, 2));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[1, 0], 0);
+
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[0, 2], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 2], (int)PieceType.Smashboy);
+        }
+        [TestMethod]
+        public void Test_MoveSmashboyRight_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[2, 0] = (int)PieceType.Smashboy;
+            model.Table[3, 0] = (int)PieceType.Smashboy;
+            model.Table[2, 1] = (int)PieceType.Smashboy;
+            model.Table[3, 1] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+            model.CurrentPiece.Coordinates.Add((2, 1));
+            model.CurrentPiece.Coordinates.Add((3, 1));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (2, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (3, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 1));
+
+            Assert.AreEqual(model.Table[2, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[2, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[3, 1], (int)PieceType.Smashboy);
 
         }
         [TestMethod]
-        public void Test_MoveSmashboy_Unsuccesfull()
+        public void Test_MoveSmashboyLeft_Succesfull()
         {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 1] = (int)PieceType.Smashboy;
+            model.Table[0, 2] = (int)PieceType.Smashboy;
+            model.Table[1, 1] = (int)PieceType.Smashboy;
+            model.Table[1, 2] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+            model.CurrentPiece.Coordinates.Add((1, 2));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (1, 1));
+
+            Assert.AreEqual(model.Table[0, 2], 0);
+            Assert.AreEqual(model.Table[1, 2], 0);
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Smashboy);
 
         }
         [TestMethod]
-        public void Test_RotateSmashboy_Succesfull()
+        public void Test_MoveSmashboyLeft_Unsuccesfull()
         {
+            model.Table = new int[16, 4];
 
+            model.Table[0, 0] = (int)PieceType.Smashboy;
+            model.Table[0, 1] = (int)PieceType.Smashboy;
+            model.Table[1, 0] = (int)PieceType.Smashboy;
+            model.Table[1, 1] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (1, 1));
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Smashboy);
         }
         [TestMethod]
-        public void Test_RotateSmashboy_Unsuccesfull()
+        public void Test_MoveSmashboyDown_Succesfull()
         {
+            model.Table = new int[16, 4];
 
+            model.Table[0, 0] = (int)PieceType.Smashboy;
+            model.Table[0, 1] = (int)PieceType.Smashboy;
+            model.Table[1, 0] = (int)PieceType.Smashboy;
+            model.Table[1, 1] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (2, 1));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[0, 1], 0);
+
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[2, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[2, 1], (int)PieceType.Smashboy);
+        }
+        [TestMethod]
+        public void Test_MoveSmashboyDown_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[14, 0] = (int)PieceType.Smashboy;
+            model.Table[14, 1] = (int)PieceType.Smashboy;
+            model.Table[15, 0] = (int)PieceType.Smashboy;
+            model.Table[15, 1] = (int)PieceType.Smashboy;
+
+            model.CurrentPiece.Coordinates.Add((14, 0));
+            model.CurrentPiece.Coordinates.Add((4, 1));
+            model.CurrentPiece.Coordinates.Add((15, 0));
+            model.CurrentPiece.Coordinates.Add((15, 1));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (14, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (14, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (15, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (15, 1));
+
+            Assert.AreEqual(model.Table[14, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[14, 1], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[15, 0], (int)PieceType.Smashboy);
+            Assert.AreEqual(model.Table[15, 1], (int)PieceType.Smashboy);
         }
         #endregion
         #region Hero
         [TestMethod]
-        public void Test_MoveHero_Succesfull()
+        public void Test_MoveHeroRight_Succesfull()
+        {
+            model.Table = new int[16, 8];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (0, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 4));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 4], (int)PieceType.Hero);
+
+            model.Table[0, 0] = 0;
+            model.Table[0, 1] = 0;
+            model.Table[0, 2] = 0;
+            model.Table[0, 3] = 0;
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[1, 0] = (int)PieceType.Hero;
+            model.Table[2, 0] = (int)PieceType.Hero;
+            model.Table[3, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 1));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[1, 0], 0);
+            Assert.AreEqual(model.Table[2, 0], 0);
+            Assert.AreEqual(model.Table[3, 0], 0);
+
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 1], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_MoveHeroRight_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 3));
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+
+            model.Table[0, 0] = 0;
+            model.Table[0, 1] = 0;
+            model.Table[0, 2] = 0;
+            model.Table[0, 3] = 0;
+
+            model.Table[0, 3] = (int)PieceType.Hero;
+            model.Table[1, 3] = (int)PieceType.Hero;
+            model.Table[2, 3] = (int)PieceType.Hero;
+            model.Table[3, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 3));
+            model.CurrentPiece.Coordinates.Add((1, 3));
+            model.CurrentPiece.Coordinates.Add((2, 3));
+            model.CurrentPiece.Coordinates.Add((3, 3));
+
+            model.MovePieceRight();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 3));
+
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_MoveHeroLeft_Succesfull()
+        {
+            model.Table = new int[16, 8];
+
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+            model.Table[0, 4] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+            model.CurrentPiece.Coordinates.Add((0, 4));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 3));
+
+            Assert.AreEqual(model.Table[0, 4], 0);
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+
+            model.Table[0, 0] = 0;
+            model.Table[0, 1] = 0;
+            model.Table[0, 2] = 0;
+            model.Table[0, 3] = 0;
+
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[1, 1] = (int)PieceType.Hero;
+            model.Table[2, 1] = (int)PieceType.Hero;
+            model.Table[3, 1] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+            model.CurrentPiece.Coordinates.Add((2, 1));
+            model.CurrentPiece.Coordinates.Add((3, 1));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 0));
+
+            Assert.AreEqual(model.Table[0, 1], 0);
+            Assert.AreEqual(model.Table[1, 1], 0);
+            Assert.AreEqual(model.Table[2, 1], 0);
+            Assert.AreEqual(model.Table[3, 1], 0);
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_MoveHeroLeft_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 3));
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+
+            model.Table[0, 0] = 0;
+            model.Table[0, 1] = 0;
+            model.Table[0, 2] = 0;
+            model.Table[0, 3] = 0;
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[1, 0] = (int)PieceType.Hero;
+            model.Table[2, 0] = (int)PieceType.Hero;
+            model.Table[3, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+
+            model.MovePieceLeft();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 0));
+
+            Assert.AreEqual(model.Table[0, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_MoveHeroDown_Succesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (1, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (1, 3));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[0, 1], 0);
+            Assert.AreEqual(model.Table[0, 2], 0);
+            Assert.AreEqual(model.Table[0, 3], 0);
+
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 3], (int)PieceType.Hero);
+
+            model.Table[1, 0] = 0;
+            model.Table[1, 1] = 0;
+            model.Table[1, 2] = 0;
+            model.Table[1, 3] = 0;
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[1, 0] = (int)PieceType.Hero;
+            model.Table[2, 0] = (int)PieceType.Hero;
+            model.Table[3, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (1, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (2, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (3, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (4, 0));
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+
+            Assert.AreEqual(model.Table[1, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[4, 0], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_MoveHeroDown_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[15, 0] = (int)PieceType.Hero;
+            model.Table[15, 1] = (int)PieceType.Hero;
+            model.Table[15, 2] = (int)PieceType.Hero;
+            model.Table[15, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((15, 0));
+            model.CurrentPiece.Coordinates.Add((15, 1));
+            model.CurrentPiece.Coordinates.Add((15, 2));
+            model.CurrentPiece.Coordinates.Add((15, 3));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (15, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (15, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (15, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (15, 3));
+
+            Assert.AreEqual(model.Table[15, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[15, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[15, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[15, 3], (int)PieceType.Hero);
+
+            model.Table[15, 0] = 0;
+            model.Table[15, 1] = 0;
+            model.Table[15, 2] = 0;
+            model.Table[15, 3] = 0;
+
+            model.Table[12, 0] = (int)PieceType.Hero;
+            model.Table[13, 0] = (int)PieceType.Hero;
+            model.Table[14, 0] = (int)PieceType.Hero;
+            model.Table[15, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Coordinates.Add((12, 0));
+            model.CurrentPiece.Coordinates.Add((13, 0));
+            model.CurrentPiece.Coordinates.Add((14, 0));
+            model.CurrentPiece.Coordinates.Add((15, 0));
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (12, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (13, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (14, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (15, 0));
+
+            Assert.AreEqual(model.Table[12, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[13, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[14, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[15, 0], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_RotateHeroRight_Succesfull()
+        {
+            model.Table = new int[16, 8];
+
+            model.Table[3, 0] = (int)PieceType.Hero;
+            model.Table[3, 1] = (int)PieceType.Hero;
+            model.Table[3, 2] = (int)PieceType.Hero;
+            model.Table[3, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Type = PieceType.Hero;
+            model.CurrentPiece.Direction = PieceDirection.Up;
+
+            model.CurrentPiece.Coordinates.Add((3, 0));
+            model.CurrentPiece.Coordinates.Add((3, 1));
+            model.CurrentPiece.Coordinates.Add((3, 2));
+            model.CurrentPiece.Coordinates.Add((3, 3));
+
+            model.RotatePiece();
+
+            Assert.AreEqual(model.Table[3, 0], 0);
+            Assert.AreEqual(model.Table[3, 1], 0);
+            Assert.AreEqual(model.Table[3, 2], 0);
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (3, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (2, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (1, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 3));
+
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_RotateHeroRight_Unsuccesfull()
+        {
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Type = PieceType.Hero;
+            model.CurrentPiece.Direction = PieceDirection.Down;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.RotatePiece();
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (0, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (0, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (0, 3));
+
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_RotateHeroDown_Succesfull()
+        {
+            model.Size = 8;
+            model.Table = new int[16, 8];
+
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[1, 0] = (int)PieceType.Hero;
+            model.Table[2, 0] = (int)PieceType.Hero;
+            model.Table[3, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Type = PieceType.Hero;
+            model.CurrentPiece.Direction = PieceDirection.Right;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+
+            model.RotatePiece();
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[1, 0], 0);
+            Assert.AreEqual(model.Table[2, 0], 0);
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (3, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (3, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (3, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 3));
+
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
+        }
+        [TestMethod]
+        public void Test_RotateHeroDown_Unsuccesfull()
         {
 
         }
-        [TestMethod]
-        public void Test_MoveHero_Unsuccesfull()
+        public void Test_RotateHeroLeft_Succesfull()
         {
+            model.Size = 8;
+            model.Table = new int[16, 8];
 
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[0, 1] = (int)PieceType.Hero;
+            model.Table[0, 2] = (int)PieceType.Hero;
+            model.Table[0, 3] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Type = PieceType.Hero;
+            model.CurrentPiece.Direction = PieceDirection.Down;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((0, 2));
+            model.CurrentPiece.Coordinates.Add((0, 3));
+
+            model.RotatePiece();
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[0, 1], 0);
+            Assert.AreEqual(model.Table[0, 2], 0);
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (0, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (1, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (2, 3));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 3));
+
+            Assert.AreEqual(model.Table[0, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[1, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[2, 3], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
         }
         [TestMethod]
-        public void Test_RotateHero_Succesfull()
+        public void Test_RotateHeroUp_Succesfull()
         {
+            model.Size = 8;
+            model.Table = new int[16, 8];
 
+            model.Table[0, 0] = (int)PieceType.Hero;
+            model.Table[1, 0] = (int)PieceType.Hero;
+            model.Table[2, 0] = (int)PieceType.Hero;
+            model.Table[3, 0] = (int)PieceType.Hero;
+
+            model.CurrentPiece.Type = PieceType.Hero;
+            model.CurrentPiece.Direction = PieceDirection.Left;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((2, 0));
+            model.CurrentPiece.Coordinates.Add((3, 0));
+
+            model.RotatePiece();
+
+            Assert.AreEqual(model.Table[0, 0], 0);
+            Assert.AreEqual(model.Table[1, 0], 0);
+            Assert.AreEqual(model.Table[2, 0], 0);
+
+            Assert.AreEqual(model.CurrentPiece.Coordinates[0], (3, 0));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[1], (3, 1));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[2], (3, 2));
+            Assert.AreEqual(model.CurrentPiece.Coordinates[3], (3, 3));
+
+            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 1], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 2], (int)PieceType.Hero);
+            Assert.AreEqual(model.Table[3, 3], (int)PieceType.Hero);
         }
         [TestMethod]
-        public void Test_RotateHero_Unsuccesfull()
+        public void Test_RotateHeroUp_Unsuccesfull()
         {
 
         }
         #endregion
         #region Ricky
-        [TestMethod]
-        public void Test_MoveRicky_Succesfull()
-        {
 
-        }
-        [TestMethod]
-        public void Test_MoveRicky_Unsuccesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateRicky_Succesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateRicky_Unsuccesfull()
-        {
-
-        }
         #endregion
         #region TeeWee
-        [TestMethod]
-        public void Test_MoveTeeWee_Succesfull()
-        {
 
-        }
-        [TestMethod]
-        public void Test_MoveTeeWee_Unsuccesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateTeeWee_Succesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateTeeWee_Unsuccesfull()
-        {
-
-        }
         #endregion
         #region Z
-        [TestMethod]
-        public void Test_MoveZ_Succesfull()
-        {
 
-        }
-        [TestMethod]
-        public void Test_MoveZ_Unsuccesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateZ_Succesfull()
-        {
-
-        }
-        [TestMethod]
-        public void Test_RotateZ_Unsuccesfull()
-        {
-
-        }
         #endregion
         #endregion
         #region Insertion
+        [TestMethod]
+        public void Test_InsertPiece_NoOtherPiece()
+        {
+
+        }
         [TestMethod]
         public void Test_InsertPiece_NoFullLine()
         {
@@ -260,10 +864,10 @@ namespace TetrisTest
                 mockedSaveFile += "0 0 0 0\n";
             }
             mockedSaveFile += "2 0 0 0\n";
-            mockedSaveFile += "2 0 0 4\n";
-            mockedSaveFile += "2 0 4 4\n";
-            mockedSaveFile += "2 4 0 4\n";
-            mockedSaveFile += "4 4 4 0\n";
+            mockedSaveFile += "2 0 0 5\n";
+            mockedSaveFile += "2 0 5 5\n";
+            mockedSaveFile += "2 5 0 5\n";
+            mockedSaveFile += "5 5 5 0\n";
         }
         [TestMethod]
         public async Task Test_LoadGameAsync()
