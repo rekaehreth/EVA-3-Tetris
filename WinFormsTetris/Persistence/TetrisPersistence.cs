@@ -56,11 +56,13 @@ namespace WinFormsTetris.Persistence
                 string[] currentPieceData = (await loader.ReadLineAsync()).Split(' ');
                 // Format: Type(int), Direction(int), Coordinates(int, int, int, int) separated by spaces
                 // e.g. 2 1 0 4 1 4 2 4 3 4
+                CurrentPiece = new TetrisPiece();
+                CurrentPiece.Coordinates.Clear();
                 CurrentPiece.Type = (PieceType)(Int32.Parse(currentPieceData[0]) - 1);
                 CurrentPiece.Direction = (PieceDirection)Int32.Parse(currentPieceData[1]);
                 for (int coordinate = 0; coordinate < 4; ++coordinate )
                 {
-                    CurrentPiece.Coordinates[coordinate] = (Int32.Parse(currentPieceData[2 * (coordinate + 1)]), Int32.Parse(currentPieceData[ 2 * (coordinate + 1) + 1])); 
+                    CurrentPiece.Coordinates.Add((Int32.Parse(currentPieceData[2 * (coordinate + 1)]), Int32.Parse(currentPieceData[ 2 * (coordinate + 1) + 1]))); 
                 }
                 // reading table lines
                 for(int line = 0; line < 16; ++ line)

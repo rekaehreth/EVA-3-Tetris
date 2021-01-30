@@ -86,6 +86,9 @@ namespace WinFormsTetris
         }
         private async Task SaveGameAsync()
         {
+            model.PauseGame();
+            timer.Stop();
+            korobeiniki?.Stop();
             SaveFileDialog fileDialog = new SaveFileDialog();
             fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             fileDialog.RestoreDirectory = true;
@@ -94,9 +97,18 @@ namespace WinFormsTetris
                 string path = fileDialog.FileName;
                 await model.SaveGameAsync(path);
             }
+            if (MessageBox.Show("Game Paused\nPress OK to continue", "Game Paused", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+                model.ContinueGame();
+                timer.Start();
+                korobeiniki.PlayLooping();
+            }
         }
         private async Task LoadGameAsync()
         {
+            model.PauseGame();
+            timer.Stop();
+            korobeiniki?.Stop();
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             fileDialog.RestoreDirectory = true;
@@ -158,18 +170,19 @@ namespace WinFormsTetris
             }
             if (e.ClickedItem.Text == "Pause")
             {
-                model.PauseGame();
-                timer.Stop();
-                korobeiniki?.Stop();
-                MessageBox.Show("Game Paused\nPress OK to continue", "Game Paused", MessageBoxButtons.OK);
-                e.ClickedItem.Text = "Continue";
+                Pause();
             }
-            if (e.ClickedItem.Text == "Continue")
+        }
+        private void Pause()
+        {
+            model.PauseGame();
+            timer.Stop();
+            korobeiniki?.Stop();
+            if (MessageBox.Show("Game Paused\nPress OK to continue", "Game Paused", MessageBoxButtons.OK) == DialogResult.OK)
             {
                 model.ContinueGame();
                 timer.Start();
                 korobeiniki.PlayLooping();
-                e.ClickedItem.Text = "Pause";
             }
         }
         private void SizeButtonClicked(object sender, SizeButtonEventArgs sizeButtonEventArgs)

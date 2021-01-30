@@ -16,6 +16,17 @@ namespace WinFormsTetris.Model
         public EventHandler UpdateTable;
         public EventHandler GameOver;
         #region Game Controls
+        public void NewGame(int size)
+        {
+            Size = size;
+            Table = new int[16, Size];
+            GameActive = true;
+            CurrentPiece = new TetrisPiece();
+            Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = (int)CurrentPiece.Type + 1;
+            Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = (int)CurrentPiece.Type + 1;
+        }
         public void EndGame()
         {
             Size = 0;
@@ -42,32 +53,29 @@ namespace WinFormsTetris.Model
         {
             GameActive = true;
         }
-        public void NewGame(int size)
-        {
-            Size = size;
-            Table = new int[16, Size];
-            GameActive = true;
-            CurrentPiece = new TetrisPiece();
-            Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = (int)CurrentPiece.Type + 1;
-            Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = (int)CurrentPiece.Type + 1;
-            Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = (int)CurrentPiece.Type + 1;
-            Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = (int)CurrentPiece.Type + 1;
-        }
         #endregion
         #region Persistence calls
         public async Task LoadGameAsync(string path)
         {
-            await persistence.LoadAsync(path);
-            Size = persistence.Size;
-            CurrentPiece = persistence.CurrentPiece;
-            Table = persistence.Table;
+            if(!GameActive)
+            {
+                await persistence.LoadAsync(path);
+                Size = persistence.Size;
+                CurrentPiece = persistence.CurrentPiece;
+                Table = persistence.Table;
+                ContinueGame();
+                UpdateTable(this, null);
+            }
         }
         public async Task SaveGameAsync(string path)
         {
-            persistence.Size = Size;
-            persistence.CurrentPiece = CurrentPiece;
-            persistence.Table = Table;
-            await persistence.SaveAsync(path);
+            if(!GameActive)
+            {
+                persistence.Size = Size;
+                persistence.CurrentPiece = CurrentPiece;
+                persistence.Table = Table;
+                await persistence.SaveAsync(path);
+            }
         }
         #endregion
         #region Update CurrentPiece coordinates
@@ -140,13 +148,13 @@ namespace WinFormsTetris.Model
                     if (movedCoordinates[i].Item1 >= 16 || Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0)
                     {
                         SaveMovedPiece(CurrentPiece.Coordinates);
+                        RemoveFullLines();
                         CurrentPiece = new TetrisPiece();
                         IsGameOver();
                         return;
                     }
                 }
                 SaveMovedPiece(movedCoordinates);
-                RemoveFullLines();
             }
         }
         #endregion
@@ -155,11 +163,14 @@ namespace WinFormsTetris.Model
         {
             if(GameActive)
             {
-                List<(int, int)> rotatedCoordinates = new List<(int, int)>(4);
+                for (int i = 0; i < 4; ++i)
+                {
+                    Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] = 0;
+                }
+                List<(int, int)> rotatedCoordinates = CurrentPiece.Coordinates; ;
                 switch (CurrentPiece.Type)
                 {
                     case PieceType.Smashboy:
-                        rotatedCoordinates = CurrentPiece.Coordinates;
                         break;
                     case PieceType.Hero:
                         rotatedCoordinates = RotateHero();
@@ -178,8 +189,9 @@ namespace WinFormsTetris.Model
                 }
                 for (int i = 0; i < 4; ++i)
                 {
-                    if (rotatedCoordinates[i].Item1 > 16 || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 > Size)
+                    if (rotatedCoordinates[i].Item1 > 16 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 >= Size || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0)
                     {
+                        SaveMovedPiece(CurrentPiece.Coordinates);
                         return;
                     }
                 }
