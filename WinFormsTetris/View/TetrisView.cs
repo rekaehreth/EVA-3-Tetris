@@ -18,6 +18,7 @@ namespace WinFormsTetris
         SoundPlayer korobeiniki;
         SizeForm sizeForm;
         Timer timer;
+        TableLayoutPanel PlayingArea;
         DateTime startTime;
         public TetrisView()
         {
@@ -25,13 +26,18 @@ namespace WinFormsTetris
             PlayingArea = new TableLayoutPanel();
             PlayingArea.Visible = false;
             sizeForm = new SizeForm();
+
             timer = new Timer();
             timer.Interval = 1000;
             timer.Tick += Timer_Tick;
+
+            this.AutoSize = true;
+
             KeyDown += KeyPressed;
             sizeForm.ButtonClicked += SizeButtonClicked;
             model.UpdateTable += UpdateTable;
             model.GameOver += GameIsOver;
+
             InitializeComponent();
         }
         private void GameIsOver(object sender, EventArgs e)
@@ -107,23 +113,23 @@ namespace WinFormsTetris
                     switch ((int)model.Table[row, column])
                     {
                         case (int)PieceType.Smashboy + 1:
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.Yellow;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Yellow;
                             break;
                         case (int)PieceType.Hero + 1:
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.Blue;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Blue;
                             break;
                         case (int)PieceType.Ricky + 1:
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.Orange;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Orange;
                             break;
                         case (int)PieceType.Z + 1:
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.Green;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Green;
                             break;
                         case (int)PieceType.TeeWee + 1:
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.Purple;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Purple;
                             break;
                         default:
                             // empty
-                            PlayingArea.Controls[row + column * 16].BackColor = Color.LightGray;
+                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.LightGray;
                             break;
                     }
                 }
@@ -175,22 +181,27 @@ namespace WinFormsTetris
                 model.NewGame(12);
             } 
             PlayingArea.Dock = DockStyle.Fill;
-            PlayingArea.AutoSize = true;
+            // PlayingArea.AutoSize = true;
             PlayingArea.RowCount = 16;
             PlayingArea.ColumnCount = model.Size;
             for (int row = 0; row < PlayingArea.RowCount; ++row)
             {
+                RowStyle rowStyle = new RowStyle();
+                rowStyle.SizeType = SizeType.Percent;
+                rowStyle.Height = PlayingArea.Height / PlayingArea.RowCount;
+                PlayingArea.RowStyles.Add(rowStyle);
                 for (int column = 0; column < PlayingArea.ColumnCount; ++column)
                 {
+                    ColumnStyle columnStyle = new ColumnStyle();
+                    columnStyle.SizeType = SizeType.Percent;
+                    columnStyle.Width = this.Width / PlayingArea.ColumnCount;
+                    PlayingArea.ColumnStyles.Add(columnStyle);
+
                     Button button = new Button();
                     button.Enabled = false;
                     button.Dock = DockStyle.Fill;
-                    button.Height = PlayingArea.Height / PlayingArea.RowCount;
-                    button.Width = PlayingArea.Width / PlayingArea.ColumnCount;
                     button.BackColor = Color.LightGray;
                     PlayingArea.Controls.Add(button, row, column);
-                    PlayingArea.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-                    PlayingArea.RowStyles.Add(new RowStyle(SizeType.AutoSize));
                 }
             }
             UpdateTable(null, null);
@@ -198,6 +209,7 @@ namespace WinFormsTetris
             startTime = DateTime.Now;
             korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
             korobeiniki.PlayLooping();
+            panel.Controls.Add(PlayingArea);
         }
     }
 }
