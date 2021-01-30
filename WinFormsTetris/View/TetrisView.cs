@@ -113,23 +113,23 @@ namespace WinFormsTetris
                     switch ((int)model.Table[row, column])
                     {
                         case (int)PieceType.Smashboy + 1:
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Yellow;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.Yellow;
                             break;
                         case (int)PieceType.Hero + 1:
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Blue;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.Blue;
                             break;
                         case (int)PieceType.Ricky + 1:
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Orange;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.Orange;
                             break;
                         case (int)PieceType.Z + 1:
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Green;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.Green;
                             break;
                         case (int)PieceType.TeeWee + 1:
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.Purple;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.Purple;
                             break;
                         default:
                             // empty
-                            PlayingArea.Controls[row + column * model.Size].BackColor = Color.LightGray;
+                            PlayingArea.Controls[row * model.Size + column].BackColor = Color.LightGray;
                             break;
                     }
                 }
