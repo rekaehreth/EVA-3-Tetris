@@ -78,13 +78,12 @@ namespace WinFormsTetris.Persistence
                 throw new FileOperationException("Error while loading saved game from file.");
             }
         }
-
     }
     class FileOperationException : Exception {
-        public string Message { get; set; }
+        private string message;
         public FileOperationException(string message = null)
         {
-            Message = message;
+            this.message = message;
         }
     }
 }

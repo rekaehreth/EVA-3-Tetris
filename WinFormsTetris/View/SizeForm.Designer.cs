@@ -1,7 +1,8 @@
-﻿
-namespace WinFormsTetris.View
+﻿using System.Windows.Forms;
+
+namespace WinFormsTetris
 {
-    partial class SizeForm
+    partial class SizeForm : Form
     {
         /// <summary>
         /// Required designer variable.
@@ -41,9 +42,9 @@ namespace WinFormsTetris.View
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
+            this.label1.Margin = new System.Windows.Forms.Padding(3, 13, 3, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(234, 19);
+            this.label1.Size = new System.Drawing.Size(292, 23);
             this.label1.TabIndex = 0;
             this.label1.Text = "Please choose the size of your game!";
             // 
@@ -51,10 +52,10 @@ namespace WinFormsTetris.View
             // 
             this.SmallButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.SmallButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SmallButton.Location = new System.Drawing.Point(0, 19);
-            this.SmallButton.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
+            this.SmallButton.Location = new System.Drawing.Point(0, 23);
+            this.SmallButton.Margin = new System.Windows.Forms.Padding(3, 13, 3, 13);
             this.SmallButton.Name = "SmallButton";
-            this.SmallButton.Size = new System.Drawing.Size(234, 40);
+            this.SmallButton.Size = new System.Drawing.Size(267, 53);
             this.SmallButton.TabIndex = 1;
             this.SmallButton.Text = "4 x 16";
             this.SmallButton.UseVisualStyleBackColor = true;
@@ -64,10 +65,10 @@ namespace WinFormsTetris.View
             // 
             this.MediumButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.MediumButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.MediumButton.Location = new System.Drawing.Point(0, 59);
-            this.MediumButton.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
+            this.MediumButton.Location = new System.Drawing.Point(0, 76);
+            this.MediumButton.Margin = new System.Windows.Forms.Padding(3, 13, 3, 13);
             this.MediumButton.Name = "MediumButton";
-            this.MediumButton.Size = new System.Drawing.Size(234, 40);
+            this.MediumButton.Size = new System.Drawing.Size(267, 53);
             this.MediumButton.TabIndex = 2;
             this.MediumButton.Text = "8 x 16";
             this.MediumButton.UseVisualStyleBackColor = true;
@@ -77,10 +78,10 @@ namespace WinFormsTetris.View
             // 
             this.LargeButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.LargeButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.LargeButton.Location = new System.Drawing.Point(0, 99);
-            this.LargeButton.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
+            this.LargeButton.Location = new System.Drawing.Point(0, 129);
+            this.LargeButton.Margin = new System.Windows.Forms.Padding(3, 13, 3, 13);
             this.LargeButton.Name = "LargeButton";
-            this.LargeButton.Size = new System.Drawing.Size(234, 40);
+            this.LargeButton.Size = new System.Drawing.Size(267, 53);
             this.LargeButton.TabIndex = 3;
             this.LargeButton.Text = "12 x 16";
             this.LargeButton.UseVisualStyleBackColor = true;
@@ -88,15 +89,14 @@ namespace WinFormsTetris.View
             // 
             // SizeForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(234, 141);
+            this.ClientSize = new System.Drawing.Size(267, 188);
             this.Controls.Add(this.LargeButton);
             this.Controls.Add(this.MediumButton);
             this.Controls.Add(this.SmallButton);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "SizeForm";
             this.Text = "Game size";
             this.ResumeLayout(false);

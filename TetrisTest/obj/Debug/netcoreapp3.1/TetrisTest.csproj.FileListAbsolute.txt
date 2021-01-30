@@ -1,0 +1,4 @@
+C:\Users\Réka\source\repos\WinFormsTetris\TetrisTest\obj\Debug\netcoreapp3.1\TetrisTest.csprojAssemblyReference.cache
+C:\Users\Réka\source\repos\WinFormsTetris\TetrisTest\obj\Debug\netcoreapp3.1\TetrisTest.AssemblyInfoInputs.cache
+C:\Users\Réka\source\repos\WinFormsTetris\TetrisTest\obj\Debug\netcoreapp3.1\TetrisTest.AssemblyInfo.cs
+C:\Users\Réka\source\repos\WinFormsTetris\TetrisTest\obj\Debug\netcoreapp3.1\TetrisTest.csproj.CoreCompileInputs.cache

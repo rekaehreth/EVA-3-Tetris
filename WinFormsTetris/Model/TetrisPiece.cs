@@ -12,6 +12,7 @@ namespace WinFormsTetris.Model
         Random randomPicker;
         public TetrisPiece()
         {
+            randomPicker = new Random();
             Coordinates = new List<(int, int)>(4);
             Direction = PieceDirection.Up;
             Type = (PieceType)randomPicker.Next(0, 5);

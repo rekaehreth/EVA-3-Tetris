@@ -49,7 +49,6 @@ namespace WinFormsTetris.Model
             Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = (int)CurrentPiece.Type + 1;
             Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = (int)CurrentPiece.Type + 1;
             Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = (int)CurrentPiece.Type + 1;
-            UpdateTable?.Invoke(this, null);
         }
         #endregion
         #region Persistence calls
@@ -124,7 +123,7 @@ namespace WinFormsTetris.Model
                 List<(int, int)> movedCoordinates = new List<(int, int)>(4);
                 for (int i = 0; i < 4; ++i)
                 {
-                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1 + 1, CurrentPiece.Coordinates[i].Item2);
+                    movedCoordinates.Add((CurrentPiece.Coordinates[i].Item1 + 1, CurrentPiece.Coordinates[i].Item2));
                     if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item1 >= 16)
                     {
                         CurrentPiece = new TetrisPiece();

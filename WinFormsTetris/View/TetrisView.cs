@@ -22,6 +22,7 @@ namespace WinFormsTetris
         public TetrisView()
         {
             model = new TetrisModel();
+            PlayingArea = new TableLayoutPanel();
             PlayingArea.Visible = false;
             sizeForm = new SizeForm();
             timer = new Timer();
@@ -99,39 +100,35 @@ namespace WinFormsTetris
         }
         private void UpdateTable(object sender, EventArgs e)
         {
-            for (int row = 0; row < 5; ++row)
+            for (int row = 0; row < 16; ++row)
             {
-                for (int column = 0; column < 5; ++column)
+                for (int column = 0; column < model.Size; ++column)
                 {
                     switch ((int)model.Table[row, column])
                     {
-                        case 0:
+                        case (int)PieceType.Smashboy + 1:
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.Yellow;
+                            break;
+                        case (int)PieceType.Hero + 1:
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.Blue;
+                            break;
+                        case (int)PieceType.Ricky + 1:
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.Orange;
+                            break;
+                        case (int)PieceType.Z + 1:
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.Green;
+                            break;
+                        case (int)PieceType.TeeWee + 1:
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.Purple;
+                            break;
+                        default:
                             // empty
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.LightGray;
-                            break;
-                        case 1:
-                            // Smashboy
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.Yellow;
-                            break;
-                        case 2:
-                            // Hero
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.Blue;
-                            break;
-                        case 3:
-                            // Ricky
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.Orange;
-                            break;
-                        case 4:
-                            // Z
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.Green;
-                            break;
-                        case 5:
-                            // TeeWee
-                            PlayingArea.Controls[row * 16 + column].BackColor = Color.Purple;
+                            PlayingArea.Controls[row + column * 16].BackColor = Color.LightGray;
                             break;
                     }
                 }
             }
+            PlayingArea.Visible = true;
         }
         private void menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -190,38 +187,13 @@ namespace WinFormsTetris
                     button.Dock = DockStyle.Fill;
                     button.Height = PlayingArea.Height / PlayingArea.RowCount;
                     button.Width = PlayingArea.Width / PlayingArea.ColumnCount;
-                    switch((int) model.Table[row, column])
-                    {
-                        case 0:
-                            // empty
-                            button.BackColor = Color.LightGray;
-                            break;
-                        case 1:
-                            // Smashboy
-                            button.BackColor = Color.Yellow;
-                            break;
-                        case 2:
-                            // Hero
-                            button.BackColor = Color.Blue;
-                            break;
-                        case 3:
-                            // Ricky
-                            button.BackColor = Color.Orange;
-                            break;
-                        case 4:
-                            // Z
-                            button.BackColor = Color.Green;
-                            break;
-                        case 5:
-                            // TeeWee
-                            button.BackColor = Color.Purple;
-                            break;
-                    }
+                    button.BackColor = Color.LightGray;
                     PlayingArea.Controls.Add(button, row, column);
                     PlayingArea.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
                     PlayingArea.RowStyles.Add(new RowStyle(SizeType.AutoSize));
                 }
             }
+            UpdateTable(null, null);
             timer.Start();
             startTime = DateTime.Now;
             korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");

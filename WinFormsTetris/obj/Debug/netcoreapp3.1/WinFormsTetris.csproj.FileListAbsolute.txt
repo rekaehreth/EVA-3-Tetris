@@ -14,3 +14,4 @@ C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.
 C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.pdb
 C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.genruntimeconfig.cache
 C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.Resource.resources
+C:\Users\Réka\source\repos\WinFormsTetris\WinFormsTetris\obj\Debug\netcoreapp3.1\WinFormsTetris.SizeForm.resources
