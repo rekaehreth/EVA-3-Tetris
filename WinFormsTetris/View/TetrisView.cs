@@ -67,7 +67,7 @@ namespace WinFormsTetris
             }
             else if (e.Control && e.KeyCode == Keys.N)
             {
-                sizeForm.ShowDialog();
+                NewGame();
             }
             else if (e.Control && e.KeyCode == Keys.S)
             {
@@ -77,6 +77,12 @@ namespace WinFormsTetris
             {
                 LoadGameAsync();
             }
+        }
+        private void NewGame()
+        {
+            model.EndGame();
+            PlayingArea.Controls.Clear();
+            sizeForm.ShowDialog();
         }
         private async Task SaveGameAsync()
         {
@@ -140,7 +146,7 @@ namespace WinFormsTetris
         {
             if(e.ClickedItem.Text == "New Game")
             {
-                sizeForm.ShowDialog();
+                NewGame();
             }
             if (e.ClickedItem.Text == "Save Game")
             {
@@ -181,7 +187,6 @@ namespace WinFormsTetris
                 model.NewGame(12);
             } 
             PlayingArea.Dock = DockStyle.Fill;
-            // PlayingArea.AutoSize = true;
             PlayingArea.RowCount = 16;
             PlayingArea.ColumnCount = model.Size;
             for (int row = 0; row < PlayingArea.RowCount; ++row)
@@ -201,7 +206,7 @@ namespace WinFormsTetris
                     button.Enabled = false;
                     button.Dock = DockStyle.Fill;
                     button.BackColor = Color.LightGray;
-                    PlayingArea.Controls.Add(button, row, column);
+                    PlayingArea.Controls.Add(button, column, row);
                 }
             }
             UpdateTable(null, null);

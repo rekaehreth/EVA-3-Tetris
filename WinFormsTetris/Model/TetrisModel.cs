@@ -16,7 +16,7 @@ namespace WinFormsTetris.Model
         public EventHandler UpdateTable;
         public EventHandler GameOver;
         #region Game Controls
-        private void EndGame()
+        public void EndGame()
         {
             Size = 0;
             Table = null;
@@ -25,10 +25,13 @@ namespace WinFormsTetris.Model
         }
         private void IsGameOver()
         {
-            if( LineFull(0))
+            for( int i = 0; i < 4; ++i)
             {
-                GameOver?.Invoke(this, null);
-                EndGame();
+                if( Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] != 0)
+                {
+                    GameOver?.Invoke(this, null);
+                    EndGame();
+                }
             }
         }
         public void PauseGame()
@@ -69,13 +72,9 @@ namespace WinFormsTetris.Model
         #endregion
         #region Update CurrentPiece coordinates
         public void SaveMovedPiece(List<(int, int)> NewCoordinates)
-        {
-            Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = 0;
-            Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = 0;
-            Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = 0;
-            Table[CurrentPiece.Coordinates[3].Item1, CurrentPiece.Coordinates[3].Item2] = 0;
+        {            
             CurrentPiece.Coordinates = NewCoordinates;
-            CurrentPiece.Direction = (PieceDirection)((int)CurrentPiece.Direction + 1 % 4);
+            
             Table[CurrentPiece.Coordinates[0].Item1, CurrentPiece.Coordinates[0].Item2] = (int)CurrentPiece.Type + 1;
             Table[CurrentPiece.Coordinates[1].Item1, CurrentPiece.Coordinates[1].Item2] = (int)CurrentPiece.Type + 1;
             Table[CurrentPiece.Coordinates[2].Item1, CurrentPiece.Coordinates[2].Item2] = (int)CurrentPiece.Type + 1;
@@ -88,12 +87,17 @@ namespace WinFormsTetris.Model
         {
             if(GameActive)
             {
+                for (int i = 0; i < 4; ++i)
+                {
+                    Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] = 0;
+                }
                 List<(int, int)> movedCoordinates = new List<(int, int)>(4);
                 for (int i = 0; i < 4; ++i)
                 {
-                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 - 1);
-                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 < 0)
+                    movedCoordinates.Add((CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 - 1));
+                    if (movedCoordinates[i].Item2 < 0 || Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0)
                     {
+                        SaveMovedPiece(CurrentPiece.Coordinates);
                         return;
                     }
                 }
@@ -104,12 +108,17 @@ namespace WinFormsTetris.Model
         {
             if(GameActive)
             {
+                for (int i = 0; i < 4; ++i)
+                {
+                    Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] = 0;
+                }
                 List<(int, int)> movedCoordinates = new List<(int, int)>(4);
                 for (int i = 0; i < 4; ++i)
                 {
-                    movedCoordinates[i] = (CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 + 1);
-                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item2 >= Size)
+                    movedCoordinates.Add((CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2 + 1));
+                    if (movedCoordinates[i].Item2 >= Size || Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0)
                     {
+                        SaveMovedPiece(CurrentPiece.Coordinates);
                         return;
                     }
                 }
@@ -120,24 +129,29 @@ namespace WinFormsTetris.Model
         {
             if(GameActive)
             {
+                for(int i = 0; i < 4; ++i)
+                {
+                    Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] = 0;
+                }
                 List<(int, int)> movedCoordinates = new List<(int, int)>(4);
                 for (int i = 0; i < 4; ++i)
                 {
                     movedCoordinates.Add((CurrentPiece.Coordinates[i].Item1 + 1, CurrentPiece.Coordinates[i].Item2));
-                    if (Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0 || movedCoordinates[i].Item1 >= 16)
+                    if (movedCoordinates[i].Item1 >= 16 || Table[movedCoordinates[i].Item1, movedCoordinates[i].Item2] != 0)
                     {
+                        SaveMovedPiece(CurrentPiece.Coordinates);
                         CurrentPiece = new TetrisPiece();
+                        IsGameOver();
                         return;
                     }
                 }
                 SaveMovedPiece(movedCoordinates);
                 RemoveFullLines();
-                IsGameOver();
             }
         }
         #endregion
         #region Rotation
-        public bool RotatePiece()
+        public void RotatePiece()
         {
             if(GameActive)
             {
@@ -145,7 +159,8 @@ namespace WinFormsTetris.Model
                 switch (CurrentPiece.Type)
                 {
                     case PieceType.Smashboy:
-                        return true;
+                        rotatedCoordinates = CurrentPiece.Coordinates;
+                        break;
                     case PieceType.Hero:
                         rotatedCoordinates = RotateHero();
                         break;
@@ -159,20 +174,18 @@ namespace WinFormsTetris.Model
                         rotatedCoordinates = RotateZ();
                         break;
                     default:
-                        return false;
+                        return;
                 }
                 for (int i = 0; i < 4; ++i)
                 {
                     if (rotatedCoordinates[i].Item1 > 16 || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 > Size)
                     {
-                        return false;
+                        return;
                     }
                 }
                 CurrentPiece.Direction = (PieceDirection)((int)CurrentPiece.Direction + 1 % 4);
                 SaveMovedPiece(rotatedCoordinates);
-                return true;
             }
-            return false;
         }
         private List<(int, int)> RotateZ()
         {
@@ -181,27 +194,27 @@ namespace WinFormsTetris.Model
             {
                 case PieceDirection.Up:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2 + 1 ));
                     break;
                 case PieceDirection.Right:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 2 ));
                     break;
                 case PieceDirection.Down:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2 + 1 ));
                     break;
                 case PieceDirection.Left:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 2 ));
                     break;
             }
             return rotatedCoordinates;
@@ -213,27 +226,27 @@ namespace WinFormsTetris.Model
             {
                 case PieceDirection.Up:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2     ));
                     break;
                 case PieceDirection.Right:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 2 ));
                     break;
                 case PieceDirection.Down:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 - 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 - 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2     ));
                     break;
                 case PieceDirection.Left:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 2 ));
                     break;
             }
             return rotatedCoordinates;
@@ -245,27 +258,27 @@ namespace WinFormsTetris.Model
             {
                 case PieceDirection.Up:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 - 1, rotatedCoordinates[1].Item2 + 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 - 1, rotatedCoordinates[0].Item2 + 2 ));
                     break;
                 case PieceDirection.Right:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1,     rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 + 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1,     rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2 + 1 ));
                     break;
                 case PieceDirection.Down:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 - 1 ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2 - 2 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 - 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2 - 2 ));
                     break;
                 case PieceDirection.Left:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2     ));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2 + 1 ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2     ));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2 + 1 ));
                     break;
             }
             return rotatedCoordinates;
@@ -277,27 +290,27 @@ namespace WinFormsTetris.Model
             {
                 case PieceDirection.Up:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 3, rotatedCoordinates[1].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 3, rotatedCoordinates[0].Item2));
                     break;
                 case PieceDirection.Right:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 1));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 3));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 1));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 3));
                     break;
                 case PieceDirection.Down:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 1, rotatedCoordinates[1].Item2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 2, rotatedCoordinates[1].Item2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1 + 3, rotatedCoordinates[1].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1, rotatedCoordinates[0].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 2, rotatedCoordinates[0].Item2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 3, rotatedCoordinates[0].Item2));
                     break;
                 case PieceDirection.Left:
                     rotatedCoordinates.Add(CurrentPiece.Coordinates[3]);
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 1));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 2));
-                    rotatedCoordinates.Add((rotatedCoordinates[1].Item1, rotatedCoordinates[1].Item2 + 3));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 1));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 2));
+                    rotatedCoordinates.Add((rotatedCoordinates[0].Item1, rotatedCoordinates[0].Item2 + 3));
                     break;
             }
             return rotatedCoordinates;
