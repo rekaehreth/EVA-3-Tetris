@@ -6,7 +6,8 @@ using System.Text;
 namespace TetrisTest
 {
     [TestClass]
-    public class ZRotationTest
+    public class RotationTest
     {
+
     }
 }

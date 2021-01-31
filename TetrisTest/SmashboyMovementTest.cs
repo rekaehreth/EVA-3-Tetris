@@ -181,10 +181,11 @@ namespace TetrisTest
             Assert.AreNotEqual(model.CurrentPiece.Coordinates[2], (4, 0));
             Assert.AreNotEqual(model.CurrentPiece.Coordinates[3], (4, 1));
 
-            Assert.AreEqual(model.Table[3, 0], (int)PieceType.Smashboy + 1);
-            Assert.AreEqual(model.Table[3, 1], (int)PieceType.Smashboy + 1);
+            // RemoveFullLines removes Hero and moves everything further down
             Assert.AreEqual(model.Table[4, 0], (int)PieceType.Smashboy + 1);
             Assert.AreEqual(model.Table[4, 1], (int)PieceType.Smashboy + 1);
+            Assert.AreEqual(model.Table[5, 0], (int)PieceType.Smashboy + 1);
+            Assert.AreEqual(model.Table[5, 1], (int)PieceType.Smashboy + 1);
         }
     }
 }
