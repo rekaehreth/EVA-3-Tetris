@@ -11,8 +11,6 @@ namespace TetrisTest
     public class ModelTest
     {
         private TetrisModel model;
-        private string mockedSaveFile;
-        private MockTetrisPersistence persistenceMock;
         private PieceType GetTypeAtPosition(int line, int row)
         {
             return (PieceType)(model.Table[line, row] + 1);
@@ -24,8 +22,6 @@ namespace TetrisTest
             model.CurrentPiece = new TetrisPiece();
             model.CurrentPiece.Coordinates = new List<(int, int)>();
             model.GameActive = true;
-            model.GameOver += GameIsOver;
-            model.UpdateTable += TableUpdated;
         }
         [TestCleanup]
         public void CleanUp()
@@ -53,7 +49,6 @@ namespace TetrisTest
                             model.Table[line, row] = 0;
                         }
                     }
-
                 }
             }
             for (int line = 0; line < 16; ++line)
@@ -81,7 +76,6 @@ namespace TetrisTest
                             model.Table[line, row] = 0;
                         }
                     }
-
                 }
             }
             for (int line = 0; line < 16; ++line)
@@ -109,7 +103,6 @@ namespace TetrisTest
                             model.Table[line, row] = 0;
                         }
                     }
-
                 }
             }
             for (int line = 0; line < 16; ++line)
@@ -125,7 +118,9 @@ namespace TetrisTest
         [TestMethod]
         public void Test_InsertPiece_NoOtherPiece()
         {
+            model.Size = 4;
             model.Table = new int[16, 4];
+
             model.CurrentPiece.Coordinates.Add((15, 0));
             model.CurrentPiece.Coordinates.Add((15, 1));
             model.CurrentPiece.Coordinates.Add((14, 1));
@@ -147,6 +142,7 @@ namespace TetrisTest
         [TestMethod]
         public void Test_InsertPiece_NoFullLine()
         {
+            model.Size = 4;
             model.Table = new int[16, 4];
 
             model.Table[15, 0] = (int)PieceType.TeeWee + 1;
@@ -172,11 +168,11 @@ namespace TetrisTest
             Assert.AreNotEqual(model.CurrentPiece.Coordinates[1], (13, 1));
             Assert.AreNotEqual(model.CurrentPiece.Coordinates[2], (13, 2));
             Assert.AreNotEqual(model.CurrentPiece.Coordinates[3], (14, 2));
-
         }
         [TestMethod]
         public void Test_InsertPiece_OneFullLine()
         {
+            model.Size = 4;
             model.Table = new int[16, 4];
 
             model.Table[15, 0] = (int)PieceType.TeeWee + 1;
@@ -210,24 +206,104 @@ namespace TetrisTest
         [TestMethod]
         public void Test_InsertPiece_MultipleFullLines()
         {
+            model.Size = 4;
+            model.Table = new int[16, 4];
 
-        }
-        #endregion
-        #region Events handlers
-        private void TableUpdated(Object sender, EventArgs e)
-        {
-            //Assert.IsTrue(_model.GameTime >= 0); // a játékidõ nem lehet negatív
-            //Assert.AreEqual(_model.GameTime == 0, _model.IsGameOver); // a tesztben a játéknak csak akkor lehet vége, ha lejárt az idõ
+            model.Table[13, 0] = (int)PieceType.Hero + 1;
+            model.Table[14, 0] = (int)PieceType.Hero + 1;
+            model.Table[15, 0] = (int)PieceType.Hero + 1;
 
-            //Assert.AreEqual(e.GameStepCount, _model.GameStepCount); // a két értéknek egyeznie kell
-            //Assert.AreEqual(e.GameTime, _model.GameTime); // a két értéknek egyeznie kell
-            //Assert.IsFalse(e.IsWon); // még nem nyerték meg a játékot
+            model.Table[13, 2] = (int)PieceType.Hero + 1;
+            model.Table[14, 2] = (int)PieceType.Hero + 1;
+            model.Table[15, 2] = (int)PieceType.Hero + 1;
+
+            model.Table[14, 3] = (int)PieceType.Hero + 1;
+            model.Table[15, 3] = (int)PieceType.Hero + 1;
+
+            model.Table[11, 3] = (int)PieceType.TeeWee + 1;
+            model.Table[12, 3] = (int)PieceType.TeeWee + 1;
+            model.Table[12, 2] = (int)PieceType.TeeWee + 1;
+            model.Table[13, 3] = (int)PieceType.TeeWee + 1;
+
+            model.CurrentPiece.Coordinates.Add((12, 1));
+            model.CurrentPiece.Coordinates.Add((13, 1));
+            model.CurrentPiece.Coordinates.Add((14, 1));
+            model.CurrentPiece.Coordinates.Add((15, 1));
+
+            model.CurrentPiece.Type = PieceType.Hero;
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.Table[11, 3], 0);
+            Assert.AreEqual(model.Table[12, 1], 0);
+            Assert.AreEqual(model.Table[12, 2], 0);
+            Assert.AreEqual(model.Table[12, 3], 0);
+            Assert.AreEqual(model.Table[13, 0], 0);
+            Assert.AreEqual(model.Table[13, 1], 0);
+            Assert.AreEqual(model.Table[13, 2], 0);
+            Assert.AreEqual(model.Table[13, 3], 0);
+            Assert.AreEqual(model.Table[14, 0], 0);
+            Assert.AreEqual(model.Table[14, 1], 0);
+            Assert.AreEqual(model.Table[14, 2], 0);
+            Assert.AreEqual(model.Table[15, 0], 0);
+
+            Assert.AreEqual(model.Table[15, 1], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[15, 2], (int)PieceType.TeeWee + 1);
+            Assert.AreEqual(model.Table[15, 3], (int)PieceType.TeeWee + 1);
+            Assert.AreEqual(model.Table[14, 3], (int)PieceType.TeeWee + 1);
+
+            Assert.AreNotEqual(model.CurrentPiece.Coordinates[0], (12, 2));
+            Assert.AreNotEqual(model.CurrentPiece.Coordinates[1], (13, 2));
+            Assert.AreNotEqual(model.CurrentPiece.Coordinates[2], (14, 2));
+            Assert.AreNotEqual(model.CurrentPiece.Coordinates[3], (15, 2));
         }
-        private void GameIsOver(Object sender, EventArgs e)
+        [TestMethod]
+        public void Test_NoInsertion_NoRemoval_MultipleFullLines()
         {
-            //Assert.IsTrue(_model.IsGameOver); // biztosan vége van a játéknak
-            //Assert.AreEqual(0, e.GameTime); // a tesztben csak akkor váltódhat ki, ha elfogy az idõ
-            //Assert.IsFalse(e.IsWon);
+            model.Size = 4;
+            model.Table = new int[16, 4];
+
+            model.Table[13, 0] = (int)PieceType.Hero + 1;
+            model.Table[14, 0] = (int)PieceType.Hero + 1;
+            model.Table[15, 0] = (int)PieceType.Hero + 1;
+
+            model.Table[13, 2] = (int)PieceType.Hero + 1;
+            model.Table[14, 2] = (int)PieceType.Hero + 1;
+            model.Table[15, 2] = (int)PieceType.Hero + 1;
+
+            model.Table[14, 3] = (int)PieceType.Hero + 1;
+            model.Table[15, 3] = (int)PieceType.Hero + 1;
+
+            model.Table[11, 3] = (int)PieceType.TeeWee + 1;
+            model.Table[12, 3] = (int)PieceType.TeeWee + 1;
+            model.Table[12, 2] = (int)PieceType.TeeWee + 1;
+            model.Table[13, 3] = (int)PieceType.TeeWee + 1;
+
+            model.CurrentPiece.Coordinates.Add((11, 1));
+            model.CurrentPiece.Coordinates.Add((12, 1));
+            model.CurrentPiece.Coordinates.Add((13, 1));
+            model.CurrentPiece.Coordinates.Add((14, 1));
+
+            model.CurrentPiece.Type = PieceType.Hero;
+
+            model.MovePieceDown();
+
+            Assert.AreEqual(model.Table[13, 0], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[14, 0], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[15, 0], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[12, 1], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[13, 1], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[14, 1], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[15, 1], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[13, 2], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[14, 2], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[15, 2], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[14, 3], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[15, 3], (int)PieceType.Hero + 1);
+            Assert.AreEqual(model.Table[13, 3], (int)PieceType.TeeWee + 1);
+            Assert.AreEqual(model.Table[12, 3], (int)PieceType.TeeWee + 1);
+            Assert.AreEqual(model.Table[12, 2], (int)PieceType.TeeWee + 1);
+            Assert.AreEqual(model.Table[11, 3], (int)PieceType.TeeWee + 1);
         }
         #endregion
     }

@@ -96,12 +96,28 @@ namespace WinFormsTetris
             {
                 string path = fileDialog.FileName;
                 await model.SaveGameAsync(path);
+                if (MessageBox.Show("Game Saved\nPress OK to continue game", "Game Saved", MessageBoxButtons.OK) == DialogResult.OK)
+                {
+                    model.ContinueGame();
+                    timer.Start();
+                    if (korobeiniki == null)
+                    {
+                        korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+                    }
+                    korobeiniki?.PlayLooping();
+                    return;
+                }
             }
-            if (MessageBox.Show("Game Paused\nPress OK to continue", "Game Paused", MessageBoxButtons.OK) == DialogResult.OK)
+            if (MessageBox.Show("Game Paused\nPress OK to continue game", "Game Paused", MessageBoxButtons.OK) == DialogResult.OK)
             {
                 model.ContinueGame();
                 timer.Start();
-                korobeiniki.PlayLooping();
+                if (korobeiniki == null)
+                {
+                    korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+                }
+                korobeiniki?.PlayLooping();
+                return;
             }
         }
         private async Task LoadGameAsync()
@@ -116,7 +132,28 @@ namespace WinFormsTetris
             {
                 string path = fileDialog.FileName;
                 await model.LoadGameAsync(path);
+                if (MessageBox.Show("Game Loaded\nPress OK to continue", "Game Loaded", MessageBoxButtons.OK) == DialogResult.OK)
+                {
+                    model.ContinueGame();
+                    timer.Start();
+                    if (korobeiniki == null)
+                    {
+                        korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+                    }
+                    korobeiniki.PlayLooping();
+                }
             }
+            if (MessageBox.Show("Game Paused\nPress OK to continue", "Game Paused", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+                model.ContinueGame();
+                timer.Start();
+                if (korobeiniki == null)
+                {
+                    korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+                }
+                korobeiniki.PlayLooping();
+            }
+
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -182,6 +219,10 @@ namespace WinFormsTetris
             {
                 model.ContinueGame();
                 timer.Start();
+                if (korobeiniki == null)
+                {
+                    korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+                }
                 korobeiniki.PlayLooping();
             }
         }
@@ -225,7 +266,10 @@ namespace WinFormsTetris
             UpdateTable(null, null);
             timer.Start();
             startTime = DateTime.Now;
-            korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+            if (korobeiniki == null)
+            {
+                korobeiniki = new SoundPlayer(@"..\Resources\Korobeiniki.wav");
+            }
             korobeiniki.PlayLooping();
             panel.Controls.Add(PlayingArea);
         }

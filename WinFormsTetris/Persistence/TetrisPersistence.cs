@@ -24,7 +24,7 @@ namespace WinFormsTetris.Persistence
                 string currentPieceLine = $"{(int)CurrentPiece.Type} {(int)CurrentPiece.Direction} ";
                 for(int coordinate = 0; coordinate < 4; ++coordinate)
                 {
-                    currentPieceLine += $"{CurrentPiece.Coordinates[coordinate].Item1} {CurrentPiece.Coordinates[coordinate].Item1} ";
+                    currentPieceLine += $"{CurrentPiece.Coordinates[coordinate].Item1} {CurrentPiece.Coordinates[coordinate].Item2} ";
                 }
                 await saver.WriteLineAsync(currentPieceLine);
                 // save Table
@@ -58,7 +58,7 @@ namespace WinFormsTetris.Persistence
                 // e.g. 2 1 0 4 1 4 2 4 3 4
                 CurrentPiece = new TetrisPiece();
                 CurrentPiece.Coordinates.Clear();
-                CurrentPiece.Type = (PieceType)(Int32.Parse(currentPieceData[0]) - 1);
+                CurrentPiece.Type = (PieceType)(Int32.Parse(currentPieceData[0]));
                 CurrentPiece.Direction = (PieceDirection)Int32.Parse(currentPieceData[1]);
                 for (int coordinate = 0; coordinate < 4; ++coordinate )
                 {
