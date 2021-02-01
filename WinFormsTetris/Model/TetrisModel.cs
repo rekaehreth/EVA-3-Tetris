@@ -42,6 +42,7 @@ namespace WinFormsTetris.Model
                 {
                     GameOver?.Invoke(this, null);
                     EndGame();
+                    return;
                 }
             }
         }
