@@ -22,6 +22,9 @@ namespace TetrisTest
             model.CurrentPiece = new TetrisPiece();
             model.CurrentPiece.Coordinates = new List<(int, int)>();
             model.GameActive = true;
+            model.GameOver += GameOverHandler;
+
+            model.persistence = new MockTetrisPersistence();
         }
         [TestCleanup]
         public void CleanUp()
@@ -112,6 +115,47 @@ namespace TetrisTest
                     Assert.AreEqual(model.Table[line, row], 0);
                 }
             }
+        }
+        private void GameOverHandler(object sender, EventArgs e)
+        {
+            bool CoordinatesEmpty = true;
+            for (int i = 0; i < 4; ++i)
+            {
+                if(model.Table[model.CurrentPiece.Coordinates[i].Item1, model.CurrentPiece.Coordinates[i].Item2] != 0)
+                {
+                    CoordinatesEmpty = false;
+                }
+            }
+            Assert.IsFalse(CoordinatesEmpty);
+        }
+        [TestMethod]
+        public void Test_GameOver()
+        {
+            model.Size = 4;
+            model.Table = new int[16, 4];
+
+            model.Table[0, 0] = (int)PieceType.Hero + 1;
+            model.Table[0, 1] = (int)PieceType.Hero + 1;
+            model.Table[0, 2] = (int)PieceType.Hero + 1;
+            model.Table[0, 3] = (int)PieceType.Hero + 1;
+
+            model.Table[1, 0] = (int)PieceType.Hero + 1;
+            model.Table[1, 1] = (int)PieceType.Hero + 1;
+            model.Table[1, 2] = (int)PieceType.Hero + 1;
+            model.Table[1, 3] = (int)PieceType.Hero + 1;
+
+            model.CurrentPiece.Coordinates.Add((0, 0));
+            model.CurrentPiece.Coordinates.Add((0, 1));
+            model.CurrentPiece.Coordinates.Add((1, 0));
+            model.CurrentPiece.Coordinates.Add((1, 1));
+
+            model.MovePieceDown();
+            // The GameIsOver method invokes the GameOver Event
+            // effects of EndGame
+            Assert.AreEqual(model.Size, 0);
+            Assert.AreEqual(model.Table, null);
+            Assert.AreEqual(model.CurrentPiece, null);
+            Assert.IsFalse(model.GameActive);
         }
         #endregion
         #region Insertion
@@ -304,6 +348,18 @@ namespace TetrisTest
             Assert.AreEqual(model.Table[12, 3], (int)PieceType.TeeWee + 1);
             Assert.AreEqual(model.Table[12, 2], (int)PieceType.TeeWee + 1);
             Assert.AreEqual(model.Table[11, 3], (int)PieceType.TeeWee + 1);
+        }
+        #endregion
+        #region Persistence
+        [TestMethod]
+        public void Test_SaveGame()
+        {
+
+        }
+        [TestMethod]
+        public void Test_LoadGame()
+        {
+
         }
         #endregion
     }

@@ -45,7 +45,10 @@ namespace WinFormsTetris
             timer.Stop();
             korobeiniki?.Stop();
             TimeSpan elapsedTime = DateTime.Now - startTime;
-            MessageBox.Show($"Game lasted for {elapsedTime.Minutes} minutes {elapsedTime.Seconds} seconds", "Game Over", MessageBoxButtons.OK);
+            if(MessageBox.Show($"Game lasted for {elapsedTime.Minutes} minutes {elapsedTime.Seconds} seconds", "Game Over", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+                NewGame();
+            }
         }
         private void KeyPressed(object sender, KeyEventArgs e)
         {

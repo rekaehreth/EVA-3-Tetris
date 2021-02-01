@@ -8,7 +8,7 @@ namespace WinFormsTetris.Model
 {
     public class TetrisModel
     {
-        private TetrisPersistence persistence = new TetrisPersistence();
+        public ITetrisPersistence persistence = new TetrisPersistence();
         public int Size { get; set; } // oszlopok száma
         public int[,] Table { get; set; }
         public TetrisPiece CurrentPiece { get; set; }
@@ -36,14 +36,12 @@ namespace WinFormsTetris.Model
         }
         private void IsGameOver()
         {
-
             for (int i = 0; i < 4; ++i)
             {
                 if (Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] != 0)
                 {
                     GameOver?.Invoke(this, null);
                     EndGame();
-                    NewGame(Size);
                 }
             }
         }
@@ -191,13 +189,13 @@ namespace WinFormsTetris.Model
                 }
                 for (int i = 0; i < 4; ++i)
                 {
-                    if (rotatedCoordinates[i].Item1 > 16 || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 >= Size || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0)
+                    if (rotatedCoordinates[i].Item1 >= 16 || rotatedCoordinates[i].Item1 < 0  || rotatedCoordinates[i].Item2 < 0 || rotatedCoordinates[i].Item2 >= Size || Table[rotatedCoordinates[i].Item1, rotatedCoordinates[i].Item2] != 0)
                     {
                         SaveMovedPiece(CurrentPiece.Coordinates);
                         return;
                     }
                 }
-                CurrentPiece.Direction = (PieceDirection)((int)CurrentPiece.Direction + 1 % 4);
+                CurrentPiece.Direction = (PieceDirection)(((int)CurrentPiece.Direction + 1) % 4);
                 SaveMovedPiece(rotatedCoordinates);
             }
         }
@@ -271,7 +269,7 @@ namespace WinFormsTetris.Model
             switch (CurrentPiece.Direction)
             {
                 case PieceDirection.Up:
-                    rotatedCoordinates.Add((CurrentPiece.Coordinates[1].Item1 - 1,  CurrentPiece.Coordinates[1].Item2   ));
+                    rotatedCoordinates.Add((CurrentPiece.Coordinates[1].Item1,  CurrentPiece.Coordinates[1].Item2 + 1   ));
                     rotatedCoordinates.Add((rotatedCoordinates[0].Item1,            rotatedCoordinates[0].Item2 - 1     ));
                     rotatedCoordinates.Add((rotatedCoordinates[0].Item1,            rotatedCoordinates[0].Item2 - 2     ));
                     rotatedCoordinates.Add((rotatedCoordinates[0].Item1 + 1,        rotatedCoordinates[0].Item2 - 2     ));

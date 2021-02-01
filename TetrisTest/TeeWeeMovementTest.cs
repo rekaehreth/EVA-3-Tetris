@@ -134,10 +134,10 @@ namespace TetrisTest
             model.CurrentPiece.Coordinates.Add((0, 1));
             model.CurrentPiece.Coordinates.Add((1, 2));
 
-            model.Table[1, 0] = (int)PieceType.Z + 1;
-            model.Table[1, 1] = (int)PieceType.Z + 1;
-            model.Table[0, 1] = (int)PieceType.Z + 1;
-            model.Table[1, 2] = (int)PieceType.Z + 1;
+            model.Table[1, 0] = (int)PieceType.TeeWee + 1;
+            model.Table[1, 1] = (int)PieceType.TeeWee + 1;
+            model.Table[0, 1] = (int)PieceType.TeeWee + 1;
+            model.Table[1, 2] = (int)PieceType.TeeWee + 1;
 
             model.MovePieceDown();
 
@@ -185,6 +185,5 @@ namespace TetrisTest
             Assert.AreEqual(model.Table[4, 1], (int)PieceType.TeeWee + 1);
             Assert.AreEqual(model.Table[5, 2], (int)PieceType.TeeWee + 1);
         }
-
     }
 }
