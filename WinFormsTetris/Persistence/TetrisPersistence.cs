@@ -12,21 +12,20 @@ namespace WinFormsTetris.Persistence
         public int Size { get; set; } // oszlopok száma
         public int[,] Table { get; set; }
         public TetrisPiece CurrentPiece { get; set; }
-
-        public async Task SaveAsync(string path)
+        public async Task<string> SaveAsync(string path)
         {
             try
             {
-                saver = new StreamWriter(path);
+                string saveFileContents = "";
                 // save size
-                await saver.WriteLineAsync(Size.ToString());
+                saveFileContents += Size.ToString() + '\n';
                 // save CurrentPiece
                 string currentPieceLine = $"{(int)CurrentPiece.Type} {(int)CurrentPiece.Direction} ";
                 for(int coordinate = 0; coordinate < 4; ++coordinate)
                 {
                     currentPieceLine += $"{CurrentPiece.Coordinates[coordinate].Item1} {CurrentPiece.Coordinates[coordinate].Item2} ";
                 }
-                await saver.WriteLineAsync(currentPieceLine);
+                saveFileContents += currentPieceLine + '\n';
                 // save Table
                 for(int line = 0; line < 16; ++line)
                 {
@@ -35,9 +34,12 @@ namespace WinFormsTetris.Persistence
                     {
                         currentLine += $"{Table[line, row]} ";
                     }
-                    await saver.WriteLineAsync(currentLine);
+                    saveFileContents += currentLine + '\n';
                 }
+                saver = new StreamWriter(path);
+                await saver.WriteAsync(saveFileContents);
                 saver.Close();
+                return saveFileContents;
             }
             catch (Exception)
             {

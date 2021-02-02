@@ -12,6 +12,6 @@ namespace WinFormsTetris.Persistence
         public int[,] Table { get; set; }
         public TetrisPiece CurrentPiece { get; set; }
         Task LoadAsync(String path);
-        Task SaveAsync(String path);
+        Task<string> SaveAsync(String path);
     }
 }

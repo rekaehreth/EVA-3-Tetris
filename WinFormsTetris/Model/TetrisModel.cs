@@ -68,15 +68,17 @@ namespace WinFormsTetris.Model
                 UpdateTable?.Invoke(this, null);
             }
         }
-        public async Task SaveGameAsync(string path)
+        public async Task<string> SaveGameAsync(string path)
         {
-            if(!GameActive)
+            string contents = "";
+            if (!GameActive)
             {
                 persistence.Size = Size;
                 persistence.CurrentPiece = CurrentPiece;
                 persistence.Table = Table;
-                await persistence.SaveAsync(path);
+                contents = await persistence.SaveAsync(path);
             }
+            return contents;
         }
         #endregion
         #region Update CurrentPiece coordinates
