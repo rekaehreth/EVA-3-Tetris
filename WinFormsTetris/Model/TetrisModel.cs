@@ -13,8 +13,8 @@ namespace WinFormsTetris.Model
         public int[,] Table { get; set; }
         public TetrisPiece CurrentPiece { get; set; }
         public bool GameActive { get; set; }
-        public EventHandler UpdateTable;
-        public EventHandler GameOver;
+        public event EventHandler UpdateTable;
+        public event EventHandler GameOver;
         #region Game Controls
         public void NewGame(int size)
         {
@@ -40,8 +40,8 @@ namespace WinFormsTetris.Model
             {
                 if (Table[CurrentPiece.Coordinates[i].Item1, CurrentPiece.Coordinates[i].Item2] != 0)
                 {
-                    GameOver?.Invoke(this, null);
                     EndGame();
+                    GameOver?.Invoke(this, null);
                     return;
                 }
             }
@@ -50,7 +50,7 @@ namespace WinFormsTetris.Model
         {
             GameActive = false;
         }
-        internal void ContinueGame()
+        public void ContinueGame()
         {
             GameActive = true;
         }
@@ -82,7 +82,7 @@ namespace WinFormsTetris.Model
         }
         #endregion
         #region Update CurrentPiece coordinates
-        public void SaveMovedPiece(List<(int, int)> NewCoordinates)
+        private void SaveMovedPiece(List<(int, int)> NewCoordinates)
         {            
             CurrentPiece.Coordinates = NewCoordinates;
             

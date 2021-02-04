@@ -83,6 +83,8 @@ namespace WinFormsTetris
         }
         private void NewGame()
         {
+            korobeiniki?.Stop();
+            timer.Stop();
             model.EndGame();
             PlayingArea.Controls.Clear();
             sizeForm.ShowDialog();
